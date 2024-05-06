@@ -7,6 +7,3 @@ __all__ = [
 ]
 
 ae64 = AE64()
-
-shellcode = asm(shellcraft.sh())
-enc_shellcode = AE64().encode(shellcode)
