@@ -30,7 +30,9 @@
 
 脚本基于`pwntools`，`ae64`开发，所以只需要安装所需库即可使用。
 
+https://github.com/Gallopsled/pwntools.git
 
+https://github.com/veritas501/ae64.git
 
 之后安装该脚本即可。（~~目前也不打算开源~~（因为写的很烂。。），再次重申，如果需要可以直接去使用`pwncli`，之前我也在用，但是由于我水平有限，有些功能不知道咋搞，就打算自己写自己用）
 
