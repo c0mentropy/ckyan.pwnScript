@@ -1,4 +1,6 @@
+LICENSE
 README.md
+setup.cfg
 setup.py
 ckyan/__init__.py
 ckyan/pwnScript/__init__.py
