@@ -1,0 +1,3 @@
+[console_scripts]
+pwnScript = ckyan.pwnScript:args_parser
+
