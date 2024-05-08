@@ -17,7 +17,8 @@ class CliParser:
 
         VERSION = "PwnScript: version 2.1.1\n" \
                   "Author: ckyan\n" \
-                  "Email: comentropy@foxmail.com\n"
+                  "Email:  comentropy@foxmail.com\n" \
+                  "GitHub: https://github.com/c0mentropy/ckyan.pwnScript\n"
 
         parser = argparse.ArgumentParser(prog="pwnScript",
                                          description="Description: "

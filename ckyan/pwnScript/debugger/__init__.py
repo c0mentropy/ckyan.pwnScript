@@ -1,27 +1,5 @@
 from ..connect import *
 
-'''
-def ggdb(breakpoint = None, pie = 0):
-
-    cmd = ""
-    cmd += "#!/bin\n"
-    cmd += "gdb -p `pidof %s` -q " %(pwn._binary)
-    if breakpoint and pie:
-        cmd += f"-ex 'b *$rebase({breakpoint}) '"
-    elif breakpoint and pie == 0:
-        cmd += f"-ex 'b *{breakpoint} '"
-
-    with open("./gdb.sh",'w') as f:
-        f.write(cmd)
-    os.system("chmod +x ./gdb.sh")
-
-def ddebug():
-    gdb.attach(pwn._p)
-    pause()
-
-D = ddebug
-'''
-
 
 def ggdb(break_point: str = "", pie: int = 0):
 

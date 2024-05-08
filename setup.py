@@ -7,12 +7,13 @@ setup(
       description = "pwnScript",
       packages=find_packages(),
       install_requires=[
-        'pwntools',  # 你需要的依赖
-        # 在这里列出其他依赖项
+        'pwntools',
+        'keystone-engine',
+        'z3-solver'
     ],
     entry_points={
         'console_scripts': [
-            'pwnScript=ckyan.pwnScript:args_parser',  # 将 pwnscript 作为命令行工具安装
+            'pwnScript=ckyan.pwnScript:args_parser',
         ],
     },
 )
