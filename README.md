@@ -423,7 +423,7 @@ if __name__ == '__main__':
 
 
 
-### AWD
+### Awd
 
 然后就是awd的一些脚本，配合pwnScript使用，自动攻击，自动提交flag等。
 

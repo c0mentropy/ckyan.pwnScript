@@ -2,11 +2,13 @@ Metadata-Version: 2.1
 Name: pwn-ckyan
 Version: 2.1.1
 Summary: pwnScript
-Home-page: UNKNOWN
+Home-page: https://github.com/c0mentropy/ckyan.pwnScript
 Author: ckyan
 Author-email: comentropy@foxmail.com
-License: UNKNOWN
+License: GPL-3.0
 Platform: UNKNOWN
+Classifier: Programming Language :: Python :: 3
+Classifier: License :: OSI Approved :: GNU General Public License v3 (GPLv3)
 
 UNKNOWN
 
