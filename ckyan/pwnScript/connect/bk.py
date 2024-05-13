@@ -11,7 +11,6 @@ class ConnectIO:
                  port: int = 9999,
                  remote_libc_path: str = ""):
 
-        self.ropper_attack = None
         self.local = local
         self.binary_path = binary_path
         self.ip = ip
@@ -23,29 +22,28 @@ class ConnectIO:
 
         self.conn = None
 
-    # 这两个函数set和update，逻辑可以改一下。现在能跑但是有点乱 (over)
     def set_connect_parameter(self):
         if self.local:
-            if self.binary_path is not None and self.binary_path != "":
+            if self.binary_path != "":
                 if os.path.exists(self.binary_path):
 
                     self.elf = ELF(self.binary_path)
                     self.libc = self.elf.libc
-                    context.binary = self.binary_path
 
+                    context.binary = self.binary_path
                     self.conn = process(self.binary_path)
                 else:
                     error(exception_message.file_not_exist)
             else:
                 error(exception_message.missing_key_documents)
         else:
-            if self.binary_path is not None and self.binary_path != "":
+            if self.remote_libc_path is not None and self.remote_libc_path != "":
+                self.libc = ELF(self.remote_libc_path)
+            else:
                 if os.path.exists(self.binary_path):
                     self.elf = ELF(self.binary_path)
                     self.libc = self.elf.libc
                     context.binary = self.binary_path
-            if self.remote_libc_path is not None and self.remote_libc_path != "":
-                self.libc = ELF(self.remote_libc_path)
 
             try:
                 self.conn = remote(self.ip, self.port)
@@ -54,74 +52,51 @@ class ConnectIO:
                     error(exception_message.remote_unreachable)
                 else:
                     error(str(ex))
-
+        
+    
     def update_connect_parameter(self, local: bool = True,
-                                 binary_path: str = "",
-                                 ip: str = "127.0.0.1",
-                                 port: int = 9999,
-                                 remote_libc_path: str = ""):
-
+                 binary_path: str = "",
+                 ip: str = "127.0.0.1",
+                 port: int = 9999,
+                 remote_libc_path: str = ""):
+        
         self.local = local
         self.binary_path = binary_path
         self.ip = ip
         self.port = port
         self.remote_libc_path = remote_libc_path
 
-        if self.local:
-            self.elf = ELF(self.binary_path)
-            self.libc = self.elf.libc
+        self.elf = ELF(self.binary_path)
 
-            context.binary = self.binary_path
+        if self.local:
+            self.libc = self.elf.libc
             self.conn = process(self.binary_path)
         else:
-            # 设置攻击远程时的elf文件，因为可能存在brop，即没有elf文件
-            if self.binary_path is not None and self.binary_path != "":
-                if os.path.exists(self.binary_path):
-                    self.elf = ELF(self.binary_path)
-                    self.libc = self.elf.libc
-
-                    context.binary = self.binary_path
-
-            # 设置攻击远程时的libc
             if self.remote_libc_path != "":
                 self.libc = ELF(self.remote_libc_path)
-
+            else:
+                self.libc = self.elf.libc
+            
             self.conn = remote(self.ip, self.port)
-
+    
     def init_script(self):
-        from ..stack import Amd64RopperAttack, I386RopperAttack
-
-        self.set_connect_parameter()
-
-        if context.arch == "amd64":
-            self.ropper_attack = Amd64RopperAttack()
-        elif context.arch == "i386":
-            self.ropper_attack = I386RopperAttack()
-
+        return self.set_connect_parameter()
+    
     def update_script(self, local: bool = True,
-                      binary_path: str = "",
-                      ip: str = "127.0.0.1",
-                      port: int = 9999,
-                      remote_libc_path: str = ""):
-        from ..stack import Amd64RopperAttack, I386RopperAttack
-
-        self.update_connect_parameter(local, binary_path, ip, port, remote_libc_path)
-
-        if context.arch == "amd64":
-            self.ropper_attack = Amd64RopperAttack()
-        elif context.arch == "i386":
-            self.ropper_attack = I386RopperAttack()
-
+                binary_path: str = "",
+                ip: str = "127.0.0.1",
+                port: int = 9999,
+                remote_libc_path: str = ""):
+        
+        return self.update_connect_parameter(local, binary_path, ip, port, remote_libc_path)
+        
 
 context.log_level = "debug"
-context.terminal = ['tmux', 'splitw', '-h']
 
 connect_io = ConnectIO(cli_parser.local,
                        cli_parser.binary_path,
                        cli_parser.ip,
                        cli_parser.port,
                        cli_parser.remote_libc_path)
-
-pandora_box = connect_io
 
 # connect_io.set_connect_parameter()

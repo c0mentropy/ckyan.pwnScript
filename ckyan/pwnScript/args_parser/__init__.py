@@ -15,7 +15,7 @@ class CliParser:
 
     def set_parse_arguments(self):
 
-        VERSION = "PwnScript: version 2.1.1\n" \
+        VERSION = "PwnScript: version 2.1.2\n" \
                   "Author: ckyan\n" \
                   "Email:  comentropy@foxmail.com\n" \
                   "GitHub: https://github.com/c0mentropy/ckyan.pwnScript\n"
@@ -30,7 +30,7 @@ class CliParser:
         subparsers = parser.add_subparsers(dest='Commands', help='Available Commands')
 
         # 添加 "run" 命令
-        de_parser = subparsers.add_parser('auto', aliases=['run'], help='Automatically detect attacks')
+        auto_parser = subparsers.add_parser('auto', aliases=['run'], help='Automatically detect attacks')
 
         # 添加 "debug" 命令
         de_parser = subparsers.add_parser('debug', aliases=['de'], help='Attack locally')
@@ -47,8 +47,8 @@ class CliParser:
         re_parser.add_argument('-f', '--file', type=str, help='File to debug')
         re_parser.add_argument('-l', '--libc', type=str, help='File to debug')
 
-        # 添加 "debug" 命令
-        de_parser = subparsers.add_parser('blasting', aliases=['bl'], help='Attack blow up')
+        # 添加 "blasting" 命令
+        bl_parser = subparsers.add_parser('blasting', aliases=['bl'], help='Attack blow up')
 
         # 解析命令行参数
         args = parser.parse_args()

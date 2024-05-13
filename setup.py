@@ -15,7 +15,8 @@ setup(
       install_requires=[
         'pwntools',
         'keystone-engine',
-        'z3-solver'
+        'z3-solver',
+        'requests'
     ],
       entry_points={
         'console_scripts': [

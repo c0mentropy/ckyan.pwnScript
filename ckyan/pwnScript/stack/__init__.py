@@ -6,6 +6,7 @@ from pwn import sleep
 from ..misc import connect_io, s, ra, sh, elf_gadget, gadget, srh, p64, u64
 from ..log4ck import *
 from ..ck_opcode import amd64_opcode
+from ..util import save2json, read4json
 
 
 def replace_non_alpha(input_str):
@@ -13,7 +14,7 @@ def replace_non_alpha(input_str):
     return re.sub(r'[^a-zA-Z0-9]', '_', input_str)
 
 
-def pattern_flag_from_data(flag_prefix, data):
+def pattern_flag_from_data(flag_prefix, data) -> bytes:
     if flag_prefix in data:
         # 定义正则表达式模式
         # pattern = r 'flag\{.*?\}'
@@ -26,6 +27,7 @@ def pattern_flag_from_data(flag_prefix, data):
         for match in matches:
             success(f"Successfully! The flag was successfully received")
             success(f"flag --> {match}")
+            return match
 
 
 class _InnerDict(OrderedDict):
@@ -44,6 +46,16 @@ class RopperAttack:
         self.padding = 0
         self.canary = -1
 
+        self.elf_gadgets = _InnerDict()
+        self.libc_gadgets = _InnerDict()
+
+        self.elf_gadgets_name = ".elf.gadgets"
+        self.libc_gadgets_name = ".libc.gadgets"
+
+        # 加载gadgets文件
+        if not connect_io.local:
+            self.load_gadgets()
+
     def set_gadgets(self, **kwargs) -> _InnerDict:
         for args_key, args_value in kwargs.items():
             # print(f"{key} = {value}")
@@ -59,6 +71,47 @@ class RopperAttack:
 
     def set_canary(self, canary):
         self.canary = canary
+
+    def save_gadgets(self):
+        temp_elf_gadgets = _InnerDict()
+        temp_libc_gadgets = _InnerDict()
+
+        if temp_elf_gadgets is not None:
+            try:
+                for my_gadget_key, my_gadget_addr in self.gadgets.items():
+                    if my_gadget_addr < connect_io.elf.address:
+                        temp_elf_gadgets[my_gadget_key] = my_gadget_addr
+                        # debug(f"elf: {my_gadget_key} -> {my_gadget_addr}")
+
+                    if connect_io.libc.address != 0:
+                        if connect_io.elf.address < my_gadget_addr < connect_io.libc.address:
+                            temp_elf_gadgets[my_gadget_key] = my_gadget_addr - connect_io.elf.address
+                            # debug(f"elf: {my_gadget_key} -> {my_gadget_addr - connect_io.elf.address}")
+
+                        if my_gadget_addr > connect_io.libc.address:
+                            temp_libc_gadgets[my_gadget_key] = my_gadget_addr - connect_io.libc.address
+                            # debug(f"libc: {my_gadget_key} -> {my_gadget_addr - connect_io.libc.address}")
+
+            except Exception as ex:
+                error(f"save_gadgets: {str(ex) = }")
+
+        save2json("./", self.elf_gadgets_name, temp_elf_gadgets)
+        save2json("./", self.libc_gadgets_name, temp_libc_gadgets)
+
+    def load_gadgets(self):
+        self.elf_gadgets = read4json("./", self.elf_gadgets_name)
+        self.libc_gadgets = read4json("./", self.libc_gadgets_name)
+
+        for my_gadget_key, my_gadget_addr in self.elf_gadgets.items():
+            self.elf_gadgets[my_gadget_key] = my_gadget_addr + connect_io.elf.address
+
+        self.gadgets.update(self.elf_gadgets)
+
+        if connect_io.libc.address != 0:
+            for my_gadget_key, my_gadget_addr in self.libc_gadgets.items():
+                self.libc_gadgets[my_gadget_key] = my_gadget_addr + connect_io.libc.address
+
+            self.gadgets.update(self.libc_gadgets)
 
     @staticmethod
     def search_func(exec_func_name: str, exec_func_addr: int) -> int:
@@ -81,6 +134,9 @@ class RopperAttack:
         return exec_func_addr
 
     def search_gadgets(self, gadget_name: str) -> int:
+
+        if not connect_io.local:
+            self.load_gadgets()
 
         gadget_name_variable_rules = replace_non_alpha(gadget_name)
         # 先尝试在该对象的gadgets里找
@@ -105,6 +161,10 @@ class RopperAttack:
         if need_gadget is not None and need_gadget != 0:
             self.gadgets[gadget_name_variable_rules] = need_gadget
             success(f"Successfully found the gadget: {gadget_name_variable_rules} --> {hex(need_gadget)}")
+
+        # 保存
+        if not connect_io.local:
+            self.save_gadgets()
 
         return need_gadget
 
@@ -405,9 +465,9 @@ class Amd64RopperAttack(RopperAttack):
             data = ra()
 
             info(f"Recv Datas: {data}")
-            pattern_flag_from_data(flag_prefix, data)
+            flag = pattern_flag_from_data(flag_prefix, data)
 
-            return data
+            return flag
         else:
             return payload
 
@@ -447,9 +507,9 @@ class Amd64RopperAttack(RopperAttack):
             data = ra()
 
             info(f"Recv Datas: {data}")
-            pattern_flag_from_data(flag_prefix, data)
+            flag = pattern_flag_from_data(flag_prefix, data)
 
-            return data
+            return flag
         else:
             return payload
 
