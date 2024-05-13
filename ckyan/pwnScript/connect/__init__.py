@@ -67,6 +67,10 @@ class ConnectIO:
         self.port = port
         self.remote_libc_path = remote_libc_path
 
+        # 这里好像直接调就可以了。。。不知道之前怎么想的
+        self.set_connect_parameter()
+
+        '''
         if self.local:
             self.elf = ELF(self.binary_path)
             self.libc = self.elf.libc
@@ -87,6 +91,7 @@ class ConnectIO:
                 self.libc = ELF(self.remote_libc_path)
 
             self.conn = remote(self.ip, self.port)
+        '''
 
     def init_script(self):
         from ..stack import Amd64RopperAttack, I386RopperAttack

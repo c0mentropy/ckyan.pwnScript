@@ -76,9 +76,10 @@ pwnScript --version
 ```
 
 ```sh
-PwnScript: version 2.1.1
+PwnScript: version 2.1.2
 Author: ckyan
-Email: comentropy@foxmail.com
+Email:  comentropy@foxmail.com
+GitHub: https://github.com/c0mentropy/ckyan.pwnScript
 ```
 
 
@@ -393,6 +394,10 @@ if __name__ == '__main__':
 
 
 awd示例：
+
+```bash
+python exp.py auto
+```
 
 ```python
 #!/usr/bin/env python3
