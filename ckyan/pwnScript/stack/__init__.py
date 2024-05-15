@@ -83,7 +83,7 @@ class RopperAttack:
                         temp_elf_gadgets[my_gadget_key] = my_gadget_addr
                         # debug(f"elf: {my_gadget_key} -> {my_gadget_addr}")
 
-                    if connect_io.libc.address != 0:
+                    if connect_io.libc is not None and connect_io.libc.address != 0:
                         if connect_io.elf.address < my_gadget_addr < connect_io.libc.address:
                             temp_elf_gadgets[my_gadget_key] = my_gadget_addr - connect_io.elf.address
                             # debug(f"elf: {my_gadget_key} -> {my_gadget_addr - connect_io.elf.address}")
@@ -107,7 +107,7 @@ class RopperAttack:
 
         self.gadgets.update(self.elf_gadgets)
 
-        if connect_io.libc.address != 0:
+        if connect_io.libc is not None and connect_io.libc.address != 0:
             for my_gadget_key, my_gadget_addr in self.libc_gadgets.items():
                 self.libc_gadgets[my_gadget_key] = my_gadget_addr + connect_io.libc.address
 
