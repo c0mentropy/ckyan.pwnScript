@@ -2,6 +2,9 @@ from ..connect import *
 from pwn import p8, p16, p32, p64, u8, u16, u32, u64
 
 
+default_timeout = 2
+
+
 def s(buf: bytes or str):
     if type(buf) == str:
         buf = buf.encode()
@@ -16,22 +19,22 @@ def sl(buf: bytes or str):
     return connect_io.conn.sendline(buf)
 
 
-def sa(delim: bytes or str, buf: bytes or str):
+def sa(delim: bytes or str, buf: bytes or str, timeout: int = default_timeout):
     if type(delim) == str:
         delim = delim.encode()
     if type(buf) == str:
         buf = buf.encode()
 
-    return connect_io.conn.sendafter(delim, buf)
+    return connect_io.conn.sendafter(delim, buf, timeout=timeout)
 
 
-def sla(delim: bytes or str, buf: bytes or str):
+def sla(delim: bytes or str, buf: bytes or str, timeout: int = default_timeout):
     if type(delim) == str:
         delim = delim.encode()
     if type(buf) == str:
         buf = buf.encode()
 
-    return connect_io.conn.sendlineafter(delim, buf)
+    return connect_io.conn.sendlineafter(delim, buf, timeout=timeout)
 
 
 def uu64(buf: bytes or str):
@@ -46,26 +49,26 @@ def uu32(buf: bytes or str):
     return u32(buf.ljust(4, b'\x00'))
 
 
-def r(n: int = None, timeout: int = 2):
+def r(n: int = None, timeout: int = default_timeout):
     return connect_io.conn.recv(n, timeout=timeout)
 
 
-def ru(delim: bytes or str, timeout: int = 2):
+def ru(delim: bytes or str, drop: bool = False, timeout: int = default_timeout):
     if type(delim) == str:
         delim = delim.encode()
 
-    return connect_io.conn.recvuntil(delim, timeout=timeout)
+    return connect_io.conn.recvuntil(delim, drop, timeout=timeout)
 
 
-def ra():
-    return connect_io.conn.recvall()
+def ra(timeout: int = default_timeout):
+    return connect_io.conn.recvall(timeout=timeout)
 
 
-def r7f(timeout: int = 2):
+def r7f(timeout: int = default_timeout):
     return uu64(connect_io.conn.recvuntil(b"\x7f", timeout=timeout)[-6:])
 
 
-def rf7(timeout: int = 2):
+def rf7(timeout: int = default_timeout):
     return uu32(connect_io.conn.recvuntil(b"\xf7", timeout=timeout)[-4:])
 
 
@@ -105,7 +108,7 @@ def elf_srh(buf: bytes or str):
     return next(connect_io.elf.search(buf))
 
 
-def tohex(buf: bytes or str):
+def to_hex(buf: bytes or str):
     if type(buf) == bytes:
         buf = buf.decode()
     return b"".join(b"\\x%02x" % ord(_) for _ in buf)
@@ -140,6 +143,26 @@ def set_elf_base_and_log(addr: int):
         warning(f"elf_base => 0x%x" % addr)
 
 
+def log_heap_base_addr(addr: int):
+    if addr % 0x1000 == 0:
+        return log_addr("heap_base", addr)
+    else:
+        warning("Warning! The heap base address may be wrong!")
+        warning(f"heap_base => 0x%x" % addr)
+
+
+def log_stack_base_addr(addr: int):
+    if addr % 0x1000 == 0:
+        return log_addr("stack_base", addr)
+    else:
+        warning("Warning! The stack base address may be wrong!")
+        warning(f"stack_base => 0x%x" % addr)
+
+
+def log_leak_addr(addr: int):
+    return log_addr("leak_addr", addr)
+
+
 def log_canary(addr: int):
     if addr % 0x100 == 0:
         log_addr("canary", addr)
@@ -148,13 +171,9 @@ def log_canary(addr: int):
         warning(f"canary => 0x%x" % addr)
 
 
-def log_leak_addr(addr: int):
-    return log_addr("leak_addr", addr)
-
-
-def recv_canary_and_log() -> int:
+def recv_canary_and_log(timeout: int = default_timeout) -> int:
     try:
-        ru(b'0x', timeout=2)
+        ru(b'0x', timeout=timeout)
         canary = int(r(16), 16)
         log_canary(canary)
         return canary
