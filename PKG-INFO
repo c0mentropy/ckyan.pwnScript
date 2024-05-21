@@ -1,9 +1,9 @@
 Metadata-Version: 2.1
 Name: pwn-ckyan
-Version: 2.1.1
+Version: 2.1.3
 Summary: pwnScript
 Home-page: https://github.com/c0mentropy/ckyan.pwnScript
-Author: ckyan
+Author: Comentropy Ckyan
 Author-email: comentropy@foxmail.com
 License: GPL-3.0
 Platform: UNKNOWN

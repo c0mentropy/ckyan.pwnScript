@@ -1,8 +1,8 @@
 from setuptools import setup, find_packages
 setup(
       name = 'pwn-ckyan',
-      version = '2.1.2',
-      author = 'ckyan',
+      version = '2.1.3',
+      author = 'Comentropy Ckyan',
       author_email = "comentropy@foxmail.com",
       description = "pwnScript",
       packages=find_packages(),

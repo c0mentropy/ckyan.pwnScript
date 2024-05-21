@@ -76,8 +76,8 @@ pwnScript --version
 ```
 
 ```sh
-PwnScript: version 2.1.2
-Author: ckyan
+PwnScript: version 2.1.3
+Author: Comentropy Ckyan
 Email:  comentropy@foxmail.com
 GitHub: https://github.com/c0mentropy/ckyan.pwnScript
 ```
@@ -115,11 +115,12 @@ pwnScript debug --help
 ```
 
 ```sh
-usage: pwnScript debug [-h] -f FILE
+usage: pwnScript debug [-h] [-f FILE] [-t]
 
 options:
   -h, --help            show this help message and exit
   -f FILE, --file FILE  File to debug
+  -t, --tmux            Use tmux to gdb-debug or not.
 ```
 
 
@@ -162,7 +163,10 @@ Remote:
 ```python
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+
 '''
+GitHub:
+    https://github.com/c0mentropy/ckyan.pwnScript
 Help: 
     python3 exp.py --help
     python3 exp.py debug --help
@@ -203,7 +207,10 @@ ret2libc
 ```python
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+
 '''
+GitHub:
+    https://github.com/c0mentropy/ckyan.pwnScript
 Help: 
     python3 exp.py --help
     python3 exp.py debug --help
@@ -255,7 +262,10 @@ orw
 ```python
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+
 '''
+GitHub:
+    https://github.com/c0mentropy/ckyan.pwnScript
 Help: 
     python3 exp.py --help
     python3 exp.py debug --help
@@ -326,7 +336,10 @@ if __name__ == '__main__':
 ```python
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+
 '''
+GitHub:
+    https://github.com/c0mentropy/ckyan.pwnScript
 Help: 
     python3 exp.py --help
     python3 exp.py debug --help
@@ -402,7 +415,10 @@ python exp.py auto
 ```python
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+
 '''
+GitHub:
+    https://github.com/c0mentropy/ckyan.pwnScript
 Help: 
     python3 exp.py --help
     python3 exp.py debug --help

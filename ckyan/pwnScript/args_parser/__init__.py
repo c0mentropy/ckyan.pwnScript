@@ -16,8 +16,8 @@ class CliParser:
 
     def set_parse_arguments(self):
 
-        VERSION = "PwnScript: version 2.1.2\n" \
-                  "Author: ckyan\n" \
+        VERSION = "PwnScript: version 2.1.3\n" \
+                  "Author: Comentropy Ckyan\n" \
                   "Email:  comentropy@foxmail.com\n" \
                   "GitHub: https://github.com/c0mentropy/ckyan.pwnScript\n"
 
