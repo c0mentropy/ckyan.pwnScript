@@ -1,4 +1,4 @@
-from ae64 import AE64
+from .ae64 import AE64
 
 __all__ = [
     "ae64",

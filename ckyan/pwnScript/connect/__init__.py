@@ -9,7 +9,8 @@ class ConnectIO:
                  binary_path: str = "",
                  ip: str = "127.0.0.1",
                  port: int = 9999,
-                 remote_libc_path: str = ""):
+                 remote_libc_path: str = "",
+                 tmux: bool = False):
 
         self.ropper_attack = None
         self.local = local
@@ -17,6 +18,8 @@ class ConnectIO:
         self.ip = ip
         self.port = port
         self.remote_libc_path = remote_libc_path
+
+        self.tmux = tmux
 
         self.elf = None
         self.libc = None
@@ -125,7 +128,8 @@ connect_io = ConnectIO(cli_parser.local,
                        cli_parser.binary_path,
                        cli_parser.ip,
                        cli_parser.port,
-                       cli_parser.remote_libc_path)
+                       cli_parser.remote_libc_path,
+                       cli_parser.tmux)
 
 pandora_box = connect_io
 

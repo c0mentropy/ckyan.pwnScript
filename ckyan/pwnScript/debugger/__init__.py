@@ -57,8 +57,9 @@ def gdb_debugger(*, break_point: str = "", binary_path: str = connect_io.binary_
 
 
 def ddebug():
-    gdb.attach(connect_io.conn)
-    pause()
+    if connect_io.local and connect_io.tmux:
+        gdb.attach(connect_io.conn)
+        pause()
 
 
 D = ddebug

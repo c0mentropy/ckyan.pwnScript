@@ -10,6 +10,7 @@ class CliParser:
         self.ip = ""
         self.port = 0
         self.remote_libc_path = ""
+        self.tmux = False
 
         self.set_parse_arguments()
 
@@ -35,6 +36,7 @@ class CliParser:
         # 添加 "debug" 命令
         de_parser = subparsers.add_parser('debug', aliases=['de'], help='Attack locally')
         de_parser.add_argument('-f', '--file', type=str, help='File to debug')
+        de_parser.add_argument('-t', '--tmux', action='store_true', help="Use tmux to gdb-debug or not.")
 
         # 添加 "remote" 命令
         re_parser = subparsers.add_parser('remote', aliases=['re'], help='Attack remotely')
@@ -62,6 +64,12 @@ class CliParser:
         if args.Commands in ['de', 'debug']:
             self.local = True
             self.binary_path = args.file
+
+            if args.tmux is not None and args.tmux:
+                self.tmux = True
+            else:
+                self.tmux = False
+
         elif args.Commands in ['re', 'remote']:
             self.local = False
             self.remote_libc_path = args.libc

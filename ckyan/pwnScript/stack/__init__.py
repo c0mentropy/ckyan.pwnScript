@@ -95,8 +95,9 @@ class RopperAttack:
             except Exception as ex:
                 error(f"save_gadgets: {str(ex) = }")
 
-        save2json("./", self.elf_gadgets_name, temp_elf_gadgets)
-        save2json("./", self.libc_gadgets_name, temp_libc_gadgets)
+        if temp_elf_gadgets is not None and temp_libc_gadgets is not None:
+            save2json("./", self.elf_gadgets_name, temp_elf_gadgets)
+            save2json("./", self.libc_gadgets_name, temp_libc_gadgets)
 
     def load_gadgets(self):
         self.elf_gadgets = read4json("./", self.elf_gadgets_name)
