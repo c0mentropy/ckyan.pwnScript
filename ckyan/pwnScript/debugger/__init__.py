@@ -17,7 +17,7 @@ def ggdb(break_point: str = "", pie: int = 0):
     os.system("chmod +x ./gdb.sh")
 
 
-def gdb_debugger(*, break_point: str = "", binary_path: str = connect_io.binary_path, enable_pie: bool = False) -> None:
+def gdb_debugger(*, break_point: str = "", binary_path: str = "", enable_pie: bool = False) -> None:
     """
     Creates a GDB debugging script based on the provided parameters and makes it executable.
 
@@ -25,6 +25,10 @@ def gdb_debugger(*, break_point: str = "", binary_path: str = connect_io.binary_
     :param binary_path: The path to the binary file being debugged.
     :param enable_pie: A boolean indicating whether to enable Position Independent Executables (PIE) support.
     """
+
+    if binary_path == '':
+        binary_path = connect_io.binary_path
+
     # Ensure input parameters are safe and valid
     if not binary_path:
         print("Invalid break_point or binary_path.")
@@ -64,5 +68,5 @@ def ddebug():
 
 D = ddebug
 
-if connect_io.local:
+if '.py' in sys.argv[0] and connect_io.local:
     gdb_debugger()

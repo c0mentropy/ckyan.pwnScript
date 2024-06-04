@@ -1,6 +1,17 @@
 import argparse
 
+from .generation_init_script import generation_script
 from ..log4ck import *
+
+
+PWN_SCRIPT_NAME = r"""
+      _                                            ____            _       _
+  ___| | ___   _  __ _ _ __    _ ____      ___ __ / ___|  ___ _ __(_)_ __ | |_
+ / __| |/ / | | |/ _` | '_ \  | '_ \ \ /\ / / '_ \\___ \ / __| '__| | '_ \| __|
+| (__|   <| |_| | (_| | | | |_| |_) \ V  V /| | | |___) | (__| |  | | |_) | |_
+ \___|_|\_\\__, |\__,_|_| |_(_) .__/ \_/\_/ |_| |_|____/ \___|_|  |_| .__/ \__|
+           |___/              |_|                                   |_|
+                                                       PwnScript version: 2.1.4""" + "\n\n"
 
 
 class CliParser:
@@ -16,7 +27,7 @@ class CliParser:
 
     def set_parse_arguments(self):
 
-        VERSION = "PwnScript: version 2.1.3\n" \
+        VERSION = "PwnScript: version 2.1.4\n" \
                   "Author: Comentropy Ckyan\n" \
                   "Email:  comentropy@foxmail.com\n" \
                   "GitHub: https://github.com/c0mentropy/ckyan.pwnScript\n"
@@ -29,9 +40,6 @@ class CliParser:
         parser.add_argument('-V', '--version', action='version', version=VERSION, help='Show the version and exit.')
 
         subparsers = parser.add_subparsers(dest='Commands', help='Available Commands')
-
-        # 添加 "run" 命令
-        auto_parser = subparsers.add_parser('auto', aliases=['run'], help='Automatically detect attacks')
 
         # 添加 "debug" 命令
         de_parser = subparsers.add_parser('debug', aliases=['de'], help='Attack locally')
@@ -49,8 +57,19 @@ class CliParser:
         re_parser.add_argument('-f', '--file', type=str, help='File to debug')
         re_parser.add_argument('-l', '--libc', type=str, help='File to debug')
 
+        # 添加 "run" 命令
+        auto_parser = subparsers.add_parser('auto', aliases=['run'], help='Automatically detect attacks')
+
         # 添加 "blasting" 命令
         bl_parser = subparsers.add_parser('blasting', aliases=['bl'], help='Attack blow up')
+
+        # 添加 "new_file" 命令
+        generation_file = subparsers.add_parser('generation', aliases=['new'], help='Generate the initialization script')
+
+        # 添加文件名参数
+        generation_file.add_argument("filename", help="The name of the file to create")
+        # 添加 name 参数
+        generation_file.add_argument("-n", "--name", help="The username to use in the initialization script")
 
         # 解析命令行参数
         args = parser.parse_args()
@@ -61,7 +80,15 @@ class CliParser:
             exit()
 
         # 根据子命令进行不同的处理
-        if args.Commands in ['de', 'debug']:
+        if args.Commands in ['auto', 'run'] or args.Commands in ['blasting', 'bl']:
+            return
+
+        elif args.Commands in ['generation', 'new']:
+            file_name = args.filename
+            author_name = args.name
+            generation_script(file_name=file_name, author_name=author_name)
+
+        elif args.Commands in ['de', 'debug']:
             self.local = True
             self.binary_path = args.file
 
@@ -108,4 +135,8 @@ class CliParser:
         return self.local, self.binary_path, self.ip, self.port, self.remote_libc_path
 
 
-cli_parser = CliParser()
+def args_init() -> CliParser:
+    return CliParser()
+
+
+# cli_parser = args_init()

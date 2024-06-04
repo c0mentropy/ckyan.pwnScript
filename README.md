@@ -53,8 +53,15 @@
 
 - 增加了本地调试`--tmux`参数，使你在写脚本时打的断点`D()`，不需要一直注释和取消注释，而只有在你调用该参数时才会触发进入debug调试，不调用该参数即不会进入调试，无须频繁更改该注释了。
 - 完善了对pwntools常用指令的封装。
-- 将AE64的脚本添加到项目中，而无须进行提前安装。
+- 讲AE64的脚本添加到项目中，而无须进行提前安装。
 - 修复了部分已知bug。
+
+
+
+2.1.4新增功能：
+
+- 使用`pwnScript new exp.py --name ckyan`生成初始化脚本，主要是一些基本信息和注释之类的。
+- 修改了无法使用`pwnScript debug --file ./pwn`直接交互的bug。
 
 
 
@@ -71,6 +78,8 @@ https://github.com/veritas501/ae64.git
 ```bash
 pip install .
 ```
+
+或
 
 ```bash
 pip install pwn-ckyan-2.1.1.tar.gz
@@ -564,6 +573,12 @@ if __name__ == '__main__':
 ### ~~Awd~~
 
 ~~然后就是awd的一些脚本，配合pwnScript使用，自动攻击，自动提交flag等。~~
+
+
+
+### qemu
+
+
 
 
 

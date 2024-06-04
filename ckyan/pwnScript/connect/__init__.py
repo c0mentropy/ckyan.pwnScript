@@ -1,4 +1,5 @@
 from pwn import *
+
 from ..args_parser import *
 from ..log4ck import *
 from ..exception_message import exception_message
@@ -36,7 +37,7 @@ class ConnectIO:
                     self.libc = self.elf.libc
                     context.binary = self.binary_path
 
-                    self.conn = process(self.binary_path)
+                    self.conn = process([self.binary_path])
                 else:
                     error(exception_message.file_not_exist)
             else:
@@ -124,6 +125,8 @@ class ConnectIO:
 context.log_level = "debug"
 context.terminal = ['tmux', 'splitw', '-h']
 
+cli_parser = args_init()
+
 connect_io = ConnectIO(cli_parser.local,
                        cli_parser.binary_path,
                        cli_parser.ip,
@@ -134,3 +137,14 @@ connect_io = ConnectIO(cli_parser.local,
 pandora_box = connect_io
 
 # connect_io.set_connect_parameter()
+if 'pwnScript' in sys.argv[0]:
+    if cli_parser.local and cli_parser.binary_path is not None:
+        try:
+            connect_io.init_script()
+            if cli_parser.tmux:
+                gdb.attach(connect_io.conn)
+                pause()
+            connect_io.conn.interactive()
+        except Exception as ex:
+            error(f"{str(ex) = }")
+            exit()
