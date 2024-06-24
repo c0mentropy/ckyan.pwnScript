@@ -148,3 +148,11 @@ if 'pwnScript' in sys.argv[0]:
         except Exception as ex:
             error(f"{str(ex) = }")
             exit()
+
+    elif not cli_parser.local and cli_parser.ip is not None and cli_parser.port is not None:
+        try:
+            connect_io.init_script()
+            connect_io.conn.interactive()
+        except Exception as ex:
+            error(f"{str(ex) = }")
+            exit()

@@ -64,6 +64,11 @@ def ra(timeout: int = default_timeout):
     return connect_io.conn.recvall(timeout=timeout)
 
 
+# recvpred(self, pred, timeout = default):
+def rp(pred, timeout: int = default_timeout):
+    return connect_io.conn.recvpred(pred, timeout)
+
+
 def r7f(timeout: int = default_timeout):
     return uu64(connect_io.conn.recvuntil(b"\x7f", timeout=timeout)[-6:])
 

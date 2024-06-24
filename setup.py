@@ -1,10 +1,10 @@
 from setuptools import setup, find_packages
 setup(
       name = 'pwn-ckyan',
-      version = '2.1.4',
+      version = '2.1.5',
       author = 'Comentropy Ckyan',
       author_email = "comentropy@foxmail.com",
-      description = "pwnScript",
+      description = "pwnScript is a tools for exploiting vuln in ELF files.",
       packages=find_packages(),
       url="https://github.com/c0mentropy/ckyan.pwnScript",
       license='GPL-3.0',

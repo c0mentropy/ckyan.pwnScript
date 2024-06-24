@@ -5,3 +5,4 @@ from .ck_opcode import *
 from .ae64_opcode import *
 from .stack import *
 from .awd import *
+from .canary import *

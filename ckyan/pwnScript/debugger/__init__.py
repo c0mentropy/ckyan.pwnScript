@@ -68,5 +68,10 @@ def ddebug():
 
 D = ddebug
 
-if '.py' in sys.argv[0] and connect_io.local:
+if connect_io.local:
     gdb_debugger()
+
+"""
+if '.py' in sys.argv[0] or 'python' in sys.argv[0] and connect_io.local:
+    gdb_debugger()
+"""

