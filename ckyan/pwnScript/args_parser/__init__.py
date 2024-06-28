@@ -11,7 +11,7 @@ PWN_SCRIPT_NAME = r"""
 | (__|   <| |_| | (_| | | | |_| |_) \ V  V /| | | |___) | (__| |  | | |_) | |_
  \___|_|\_\\__, |\__,_|_| |_(_) .__/ \_/\_/ |_| |_|____/ \___|_|  |_| .__/ \__|
            |___/              |_|                                   |_|
-                                                       PwnScript version: 2.1.5""" + "\n\n"
+                                                       PwnScript version: 2.1.6""" + "\n\n"
 
 
 class CliParser:
@@ -27,7 +27,7 @@ class CliParser:
 
     def set_parse_arguments(self):
 
-        VERSION = "PwnScript: version 2.1.5\n" \
+        VERSION = "PwnScript: version 2.1.6\n" \
                   "Author: Comentropy Ckyan\n" \
                   "Email:  comentropy@foxmail.com\n" \
                   "GitHub: https://github.com/c0mentropy/ckyan.pwnScript\n"

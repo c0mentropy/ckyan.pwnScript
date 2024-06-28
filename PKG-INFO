@@ -1,6 +1,6 @@
 Metadata-Version: 2.1
 Name: pwn-ckyan
-Version: 2.1.5
+Version: 2.1.6
 Summary: pwnScript is a tools for exploiting vuln in ELF files.
 Home-page: https://github.com/c0mentropy/ckyan.pwnScript
 Author: Comentropy Ckyan

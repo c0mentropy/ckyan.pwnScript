@@ -33,9 +33,12 @@ class ConnectIO:
             if self.binary_path is not None and self.binary_path != "":
                 if os.path.exists(self.binary_path):
 
-                    self.elf = ELF(self.binary_path)
-                    self.libc = self.elf.libc
-                    context.binary = self.binary_path
+                    try:
+                        self.elf = ELF(self.binary_path)
+                        self.libc = self.elf.libc
+                        context.binary = self.binary_path
+                    except Exception as elf_ex:
+                        error(f"{str(elf_ex) = }")
 
                     self.conn = process([self.binary_path])
                 else:

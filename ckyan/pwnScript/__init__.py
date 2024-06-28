@@ -6,3 +6,4 @@ from .ae64_opcode import *
 from .stack import *
 from .awd import *
 from .canary import *
+from .brute_force import *
