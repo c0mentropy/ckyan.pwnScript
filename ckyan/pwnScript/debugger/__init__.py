@@ -24,6 +24,7 @@ def gdb_debugger(*, break_point: str = "", binary_path: str = "", enable_pie: bo
     :param break_point: The memory address or function name where the breakpoint should be set.
     :param binary_path: The path to the binary file being debugged.
     :param enable_pie: A boolean indicating whether to enable Position Independent Executables (PIE) support.
+    :return None
     """
 
     if binary_path == '':

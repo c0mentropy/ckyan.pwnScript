@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 setup(
       name = 'pwn-ckyan',
-      version = '2.1.6',
+      version = '2.1.7',
       author = 'Comentropy Ckyan',
       author_email = "comentropy@foxmail.com",
       description = "pwnScript is a tools for exploiting vuln in ELF files.",

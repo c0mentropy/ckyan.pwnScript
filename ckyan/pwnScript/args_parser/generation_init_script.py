@@ -5,6 +5,8 @@ def generation_script(*, file_path: str = './', file_name: str = "exp.py", autho
 
     if file_name is None:
         file_name = "exp.py"
+    elif not file_name.endswith(".py"):
+        file_name += ".py"
 
     if author_name is None:
         author_name = 'ckyan'
@@ -14,8 +16,9 @@ def generation_script(*, file_path: str = './', file_name: str = "exp.py", autho
 # -*- coding: utf-8 -*-
 
 """
-Author: {author_name}
-Generation date: {datetime.now().strftime("%Y-%m-%d %H:%M:%S")}
+@File   : {file_name}
+@Author : {author_name}
+@Date   : {datetime.now().strftime("%Y-%m-%d %H:%M:%S")}
 """
 
 """
@@ -58,4 +61,3 @@ if __name__ == '__main__':
     success("File generated.")
 
     exit()
-

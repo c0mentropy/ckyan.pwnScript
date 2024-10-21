@@ -11,7 +11,7 @@ PWN_SCRIPT_NAME = r"""
 | (__|   <| |_| | (_| | | | |_| |_) \ V  V /| | | |___) | (__| |  | | |_) | |_
  \___|_|\_\\__, |\__,_|_| |_(_) .__/ \_/\_/ |_| |_|____/ \___|_|  |_| .__/ \__|
            |___/              |_|                                   |_|
-                                                       PwnScript version: 2.1.6""" + "\n\n"
+                                                       PwnScript version: 2.1.7""" + "\n\n"
 
 
 class CliParser:
@@ -22,12 +22,13 @@ class CliParser:
         self.port = 0
         self.remote_libc_path = ""
         self.tmux = False
+        self.ssl = False
 
         self.set_parse_arguments()
 
     def set_parse_arguments(self):
 
-        VERSION = "PwnScript: version 2.1.6\n" \
+        VERSION = "PwnScript: version 2.1.7\n" \
                   "Author: Comentropy Ckyan\n" \
                   "Email:  comentropy@foxmail.com\n" \
                   "GitHub: https://github.com/c0mentropy/ckyan.pwnScript\n"
@@ -55,7 +56,9 @@ class CliParser:
         re_parser.add_argument('-p', '--port', type=int,
                                help='Port number of remote server')
         re_parser.add_argument('-f', '--file', type=str, help='File to debug')
-        re_parser.add_argument('-l', '--libc', type=str, help='File to debug')
+        re_parser.add_argument('-l', '--libc', type=str, help='Libc File to link')
+
+        re_parser.add_argument('--ssl', action='store_true', help='Use a remote ssl connection')
 
         # 添加 "run" 命令
         auto_parser = subparsers.add_parser('auto', aliases=['run'], help='Automatically detect attacks')
@@ -81,6 +84,7 @@ class CliParser:
 
         # 根据子命令进行不同的处理
         if args.Commands in ['auto', 'run'] or args.Commands in ['blasting', 'bl']:
+            print(PWN_SCRIPT_NAME)
             return
 
         elif args.Commands in ['generation', 'new']:
@@ -101,6 +105,11 @@ class CliParser:
             self.local = False
             self.remote_libc_path = args.libc
             self.binary_path = args.file
+
+            if args.ssl is not None and args.ssl:
+                self.ssl = True
+            else:
+                self.ssl = False
 
             if args.url is None and args.ip is None and args.port is None:
                 re_parser.print_help()

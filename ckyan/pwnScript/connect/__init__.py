@@ -11,7 +11,8 @@ class ConnectIO:
                  ip: str = "127.0.0.1",
                  port: int = 9999,
                  remote_libc_path: str = "",
-                 tmux: bool = False):
+                 tmux: bool = False,
+                 ssl: bool = False):
 
         self.ropper_attack = None
         self.local = local
@@ -19,6 +20,8 @@ class ConnectIO:
         self.ip = ip
         self.port = port
         self.remote_libc_path = remote_libc_path
+
+        self.ssl = ssl
 
         self.tmux = tmux
 
@@ -55,7 +58,7 @@ class ConnectIO:
                 self.libc = ELF(self.remote_libc_path)
 
             try:
-                self.conn = remote(self.ip, self.port)
+                self.conn = remote(self.ip, self.port, ssl=self.ssl)
             except Exception as ex:
                 if self.ip == "127.0.0.1" or self.port == "9999":
                     error(exception_message.remote_unreachable)
@@ -135,12 +138,14 @@ connect_io = ConnectIO(cli_parser.local,
                        cli_parser.ip,
                        cli_parser.port,
                        cli_parser.remote_libc_path,
-                       cli_parser.tmux)
+                       cli_parser.tmux,
+                       cli_parser.ssl)
 
 pandora_box = connect_io
 
 # connect_io.set_connect_parameter()
 if 'pwnScript' in sys.argv[0]:
+    print(PWN_SCRIPT_NAME)
     if cli_parser.local and cli_parser.binary_path is not None:
         try:
             connect_io.init_script()
